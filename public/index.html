@@ -1,122 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevBlog - Portfolio Internship Task</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevBlog - Developer Publishing Platform</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Navigation Bar (Hidden initially) -->
-    <nav class="navbar" id="main-nav" style="display: none;">
-        <div class="logo">DevBlog</div>
-        <ul class="nav-links">
-            <li><button onclick="showPage('home')">Home</button></li>
-            <li><button onclick="showPage('dashboard')">Dashboard</button></li>
-            <li><button onclick="showPage('create-blog')">Create Blog</button></li>
-            <li><button onclick="logout()" class="btn-danger">Logout</button></li>
-        </ul>
-    </nav>
+  <nav class="navbar" id="main-nav" style="display: none;">
+    <div class="logo">DevBlog</div>
+    <ul class="nav-links">
+      <li><button data-page="home">Home</button></li>
+      <li><button data-page="dashboard">Dashboard</button></li>
+      <li><button data-page="create-blog">Create Blog</button></li>
+      <li><button id="logout-btn" class="btn-danger">Logout</button></li>
+    </ul>
+  </nav>
 
-    <main class="container">
+  <main class="container">
 
-        <!-- 1. LOGIN PAGE (Active by Default with Branding) -->
-        <section id="login" class="page active">
-            <div class="auth-card">
-                <div class="auth-header">
-                    <div class="brand-logo">DevBlog 🚀</div>
-                    <p class="app-tagline">The Tech Community & Internship Blogging Platform</p>
-                </div>
-                
-                <div class="info-badge">
-                    <p>💡 Welcome! Log in or register to publish articles, view community posts, and access your developer dashboard.</p>
-                </div>
+    <section id="login" class="page active">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="brand-logo">DevBlog</div>
+          <p class="app-tagline">The Tech Community Blogging Platform</p>
+        </div>
+        
+        <div class="info-badge">
+          <p>Welcome! Log in or register to publish articles, view community posts, and manage your content.</p>
+        </div>
 
-                <h2>Account Login</h2>
-                <form id="login-form">
-                    <label for="login-email">Email Address</label>
-                    <input type="email" id="login-email" placeholder="student@example.com" required>
-                    
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="••••••••" required>
-                    
-                    <button type="submit" class="btn-primary block">Sign In</button>
-                </form>
+        <h2>Account Login</h2>
+        <form id="login-form">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="student@example.com" required>
+          
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required>
+          
+          <button type="submit" class="btn-primary block">Sign In</button>
+        </form>
 
-                <p style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem;">
-                    Don't have an account? <a href="#" onclick="showPage('register')">Register here</a>
-                </p>
-            </div>
-        </section>
+        <p class="auth-footer">
+          Don't have an account? <a href="#" data-page="register">Register here</a>
+        </p>
+      </div>
+    </section>
 
-        <!-- 2. REGISTER PAGE -->
-        <section id="register" class="page">
-            <div class="auth-card">
-                <h2>Create an Account</h2>
-                <form id="register-form">
-                    <label for="reg-name">Full Name</label>
-                    <input type="text" id="reg-name" placeholder="John Doe" required>
+    <section id="register" class="page">
+      <div class="auth-card">
+        <h2>Create an Account</h2>
+        <form id="register-form">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="John Doe" required>
 
-                    <label for="reg-email">Email Address</label>
-                    <input type="email" id="reg-email" placeholder="student@example.com" required>
-                    
-                    <label for="reg-password">Password</label>
-                    <input type="password" id="reg-password" placeholder="••••••••" required>
-                    
-                    <button type="submit" class="btn-primary block">Register</button>
-                </form>
-                <p style="margin-top: 1rem; text-align: center;">
-                    Already have an account? <a href="#" onclick="showPage('login')">Login here</a>
-                </p>
-            </div>
-        </section>
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" placeholder="student@example.com" required>
+          
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="••••••••" required>
+          
+          <button type="submit" class="btn-primary block">Register</button>
+        </form>
+        <p class="auth-footer">
+          Already have an account? <a href="#" data-page="login">Login here</a>
+        </p>
+      </div>
+    </section>
 
-        <!-- 3. HOME PAGE -->
-        <section id="home" class="page">
-            <div class="hero">
-                <h1>Welcome to DevBlog</h1>
-                <p>Read, write, and share tech insights with the developer community.</p>
-            </div>
-            <h2>Recent Blog Posts</h2>
-            <div class="blog-grid"></div>
-        </section>
+    <section id="blog-detail" class="page">
+      <div class="detail-container">
+        <button class="btn-back" id="back-to-blogs-btn">← Back to All Blogs</button>
+        <article class="single-post">
+          <h1 id="single-blog-title">Blog Title</h1>
+          <p class="meta">
+            Published by <strong id="single-blog-author">Author</strong> on 
+            <span id="single-blog-date">Date</span>
+          </p>
+          <hr class="divider">
+          <div id="single-blog-content" class="post-content"></div>
+        </article>
+      </div>
+    </section>
 
-        <!-- 4. DASHBOARD PAGE -->
-        <section id="dashboard" class="page">
-            <h2>User Dashboard</h2>
-            <div class="dashboard-stats">
-                <div class="stat-card">
-                    <h3>Total Posts</h3>
-                    <p class="stat-number">2</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Views</h3>
-                    <p class="stat-number">1,240</p>
-                </div>
-            </div>
-            <h3>Your Published Blogs</h3>
-            <div class="blog-grid"></div>
-        </section>
+    <section id="home" class="page">
+      <div class="hero">
+        <h1>Welcome to DevBlog</h1>
+        <p>Read, write, and share tech insights with the developer community.</p>
+      </div>
+      <h2>Recent Blog Posts</h2>
+      <div class="blog-grid" id="home-blog-grid"></div>
+    </section>
 
-        <!-- 5. CREATE BLOG PAGE -->
-        <section id="create-blog" class="page">
-            <div class="form-card">
-                <h2>Create New Blog Post</h2>
-                <form id="blog-form">
-                    <label for="blog-title">Blog Title</label>
-                    <input type="text" id="blog-title" placeholder="Enter post title" required>
+    <section id="dashboard" class="page">
+      <h2>User Dashboard</h2>
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <h3>Total Posts</h3>
+          <p class="stat-number" id="user-post-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Views</h3>
+          <p class="stat-number">1,240</p>
+        </div>
+      </div>
+      <h3>Your Published Blogs</h3>
+      <div class="blog-grid" id="dashboard-blog-grid"></div>
+    </section>
 
-                    <label for="blog-content">Content</label>
-                    <textarea id="blog-content" rows="6" placeholder="Write your blog post content here..." required></textarea>
+    <section id="create-blog" class="page">
+      <div class="form-card">
+        <h2>Create New Blog Post</h2>
+        <form id="blog-form">
+          <label for="blog-title">Blog Title</label>
+          <input type="text" id="blog-title" placeholder="Enter post title" required>
 
-                    <button type="submit" class="btn-primary">Publish Post</button>
-                </form>
-            </div>
-        </section>
+          <label for="blog-content">Content</label>
+          <textarea id="blog-content" rows="6" placeholder="Write your blog post content here..." required></textarea>
 
-    </main>
+          <button type="submit" class="btn-primary">Publish Post</button>
+        </form>
+      </div>
+    </section>
 
-    <script src="script.js"></script>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
