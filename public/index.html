@@ -1,218 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InsightHub - The Modern Ideas & Stories Platform</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevBlog - Full Stack Publishing Platform</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- Navigation Bar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="#" class="brand-logo" onclick="navigateTo('feed')">
-        <span class="brand-icon">⚡</span> InsightHub
-      </a>
-      
-      <div class="nav-links" id="navLinks">
-        <!-- Injected via JavaScript based on Auth state -->
-      </div>
-    </div>
+  <nav class="navbar" id="main-nav" style="display: none;">
+    <div class="logo">DevBlog 🚀</div>
+    <ul class="nav-links">
+      <li><button data-page="home">Home Feed</button></li>
+      <li><button data-page="dashboard">My Dashboard</button></li>
+      <li><button data-page="profile">My Profile</button></li>
+      <li><button data-page="create-blog">Create Blog</button></li>
+      <li><button id="logout-btn" class="btn-danger">Logout</button></li>
+    </ul>
   </nav>
 
-  <!-- Notification Banner -->
-  <div id="alertBox" class="alert-box hidden"></div>
+  <main class="container">
 
-  <!-- Main Application Container -->
-  <main class="main-content">
-
-    <!-- VIEW 1: Feed View (Home) -->
-    <section id="feedView" class="app-view">
-      <div class="hero-section">
-        <h1 class="hero-title">Explore Fresh Perspectives & Stories</h1>
-        <p class="hero-subtitle">Discover insights across sports, deep tech, software, gaming, and lifestyle culture.</p>
-        
-        <!-- Search with Dynamic Suggestion Box -->
-        <div class="search-box-wrapper">
-          <input type="text" id="searchInput" placeholder="Search topics, keywords, or categories..." autocomplete="off" />
-          <div id="searchSuggestions" class="search-suggestions hidden"></div>
-        </div>
-
-        <!-- Filter Chips -->
-        <div class="category-filter-scroll" id="categoryFilterContainer">
-          <!-- Rendered dynamically via JS -->
-        </div>
-      </div>
-
-      <div class="feed-header">
-        <h2 id="feedHeading">Latest Articles</h2>
-        <span id="postCountBadge" class="badge">Loading stories...</span>
-      </div>
-
-      <div id="postsGrid" class="posts-grid">
-        <!-- Post Cards Rendered Here -->
-      </div>
-    </section>
-
-    <!-- VIEW 2: Login View -->
-    <section id="loginView" class="app-view auth-card-container hidden">
+    <!-- LOGIN PAGE -->
+    <section id="login" class="page active">
       <div class="auth-card">
         <div class="auth-header">
-          <h2 class="auth-brand">InsightHub</h2>
-          <p class="auth-tagline">The Modern Stories & Insights Platform</p>
-          <div class="welcome-box">
-            Welcome back! Sign in to publish stories, manage your articles, and explore trending ideas.
-          </div>
+          <div class="brand-logo">DevBlog</div>
+          <p class="app-tagline">The Tech, Sports & Lifestyle Blogging Platform</p>
         </div>
-
-        <h3 class="card-title">Account Login</h3>
-        <form id="loginForm" class="auth-form">
-          <div class="form-group">
-            <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" placeholder="yourname@domain.com" required />
-          </div>
-          <div class="form-group">
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" placeholder="••••••••" required />
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-        </form>
-
-        <p class="auth-footer-text">
-          Don't have an account? <a href="#" onclick="navigateTo('register')">Register here</a>
-        </p>
-      </div>
-    </section>
-
-    <!-- VIEW 3: Register View -->
-    <section id="registerView" class="app-view auth-card-container hidden">
-      <div class="auth-card">
-        <div class="auth-header">
-          <h2 class="auth-brand">InsightHub</h2>
-          <p class="auth-tagline">Join our creator community</p>
-          <div class="welcome-box">
-            Create your account to start writing and sharing stories with readers worldwide.
-          </div>
-        </div>
-
-        <h3 class="card-title">Create Account</h3>
-        <form id="registerForm" class="auth-form">
-          <div class="form-group">
-            <label for="regName">Full Name</label>
-            <input type="text" id="regName" placeholder="e.g. Alex Johnson" required />
-          </div>
-          <div class="form-group">
-            <label for="regEmail">Email Address</label>
-            <input type="email" id="regEmail" placeholder="yourname@domain.com" required />
-          </div>
-          <div class="form-group">
-            <label for="regPassword">Password</label>
-            <input type="password" id="regPassword" placeholder="Minimum 6 characters" minlength="6" required />
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-        </form>
-
-        <p class="auth-footer-text">
-          Already have an account? <a href="#" onclick="navigateTo('login')">Sign in here</a>
-        </p>
-      </div>
-    </section>
-
-    <!-- VIEW 4: User Dashboard (My Articles) -->
-    <section id="dashboardView" class="app-view hidden">
-      <div class="dashboard-header">
-        <div>
-          <h2>Creator Dashboard</h2>
-          <p class="text-muted">Manage, edit, and review your published articles.</p>
-        </div>
-        <button class="btn btn-primary" onclick="navigateTo('create')">+ Write New Article</button>
-      </div>
-
-      <div id="userPostsGrid" class="posts-grid">
-        <!-- User's own posts will be rendered here -->
-      </div>
-    </section>
-
-    <!-- VIEW 5: User Profile -->
-    <section id="profileView" class="app-view auth-card-container hidden">
-      <div class="auth-card profile-card">
-        <h3 class="card-title">Author Profile</h3>
-        <div class="profile-badge">Active Member Account</div>
         
-        <div class="profile-details">
-          <div class="detail-item">
-            <span class="detail-label">Full Name</span>
-            <span id="profileName" class="detail-val">-</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Email Address</span>
-            <span id="profileEmail" class="detail-val">-</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Total Articles Published</span>
-            <span id="profilePostCount" class="detail-val highlight">0</span>
-          </div>
+        <div class="info-badge">
+          <p>Welcome! Log in with JWT authentication to access your personal dashboard and publish blogs.</p>
         </div>
 
-        <button class="btn btn-outline btn-block mt-4" onclick="navigateTo('dashboard')">Back to Dashboard</button>
-      </div>
-    </section>
-
-    <!-- VIEW 6: Create / Edit Article View -->
-    <section id="createView" class="app-view form-container-view hidden">
-      <div class="form-card">
-        <h2 id="formTitle">Write a New Story</h2>
-        <form id="postForm">
-          <input type="hidden" id="editPostId" value="" />
+        <h2>Account Login</h2>
+        <form id="login-form">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="student@example.com" required>
           
-          <div class="form-group">
-            <label for="postTitle">Story Title</label>
-            <input type="text" id="postTitle" placeholder="Give your story an engaging title..." required />
-          </div>
-
-          <div class="form-group">
-            <label for="postCategory">Category</label>
-            <select id="postCategory" required>
-              <option value="">Select a category</option>
-              <option value="Cricket">Cricket</option>
-              <option value="Football">Football</option>
-              <option value="AI & Tech">AI & Tech</option>
-              <option value="Web Dev">Web Dev</option>
-              <option value="Coding & Software">Coding & Software</option>
-              <option value="Gaming">Gaming</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Lifestyle">Lifestyle</option>
-              <option value="Career">Career</option>
-              <option value="Science & Space">Science & Space</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="postContent">Story Content</label>
-            <textarea id="postContent" rows="12" placeholder="Write your full article here..." required></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-outline" onclick="navigateTo('dashboard')">Cancel</button>
-            <button type="submit" id="savePostBtn" class="btn btn-primary">Publish Story</button>
-          </div>
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required>
+          
+          <button type="submit" class="btn-primary block">Sign In</button>
         </form>
+
+        <p class="auth-footer">
+          Don't have an account? <a href="#" data-page="register">Register here</a>
+        </p>
       </div>
     </section>
 
-    <!-- VIEW 7: Single Post View -->
-    <section id="singlePostView" class="app-view hidden">
-      <button class="btn btn-outline mb-4" onclick="navigateTo('feed')">← Back to Stories</button>
-      <article class="single-article" id="singleArticleContainer">
-        <!-- Rendered dynamically -->
-      </article>
+    <!-- REGISTER PAGE -->
+    <section id="register" class="page">
+      <div class="auth-card">
+        <h2>Create an Account</h2>
+        <form id="register-form">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="John Doe" required>
+
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" placeholder="student@example.com" required>
+          
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="••••••••" required>
+          
+          <button type="submit" class="btn-primary block">Register</button>
+        </form>
+        <p class="auth-footer">
+          Already have an account? <a href="#" data-page="login">Login here</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- HOME FEED -->
+    <section id="home" class="page">
+      <div class="hero">
+        <h1>Explore Community Insights</h1>
+        <p>Read, write, edit, and discover articles across Sports, Tech, Gaming, and Lifestyle.</p>
+      </div>
+
+      <div class="filter-wrapper">
+        <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search blogs by title or content...">
+        
+        <div class="category-pills" id="category-pills">
+          <button class="pill active" data-category="All">All</button>
+          <button class="pill" data-category="Cricket">🏏 Cricket</button>
+          <button class="pill" data-category="Football">⚽ Football</button>
+          <button class="pill" data-category="Lifestyle">🌿 Lifestyle</button>
+          <button class="pill" data-category="Career">🎯 Career</button>
+          <button class="pill" data-category="AI & Tech">🤖 AI & Tech</button>
+          <button class="pill" data-category="Web Dev">💻 Web Dev</button>
+          <button class="pill" data-category="Gaming">🎮 Gaming</button>
+          <button class="pill" data-category="General">📌 General</button>
+        </div>
+      </div>
+
+      <h2>Recent Blog Posts</h2>
+      <div class="blog-grid" id="home-blog-grid"></div>
+    </section>
+
+    <!-- SINGLE BLOG DETAIL PAGE -->
+    <section id="blog-detail" class="page">
+      <div class="detail-container">
+        <button class="btn-back" id="back-to-blogs-btn">← Back to All Blogs</button>
+        <article class="single-post">
+          <span class="category-tag" id="single-blog-category">General</span>
+          <h1 id="single-blog-title">Blog Title</h1>
+          <p class="meta">
+            Published by <strong id="single-blog-author">Author</strong> on 
+            <span id="single-blog-date">Date</span>
+          </p>
+          <hr class="divider">
+          <div id="single-blog-content" class="post-content"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- DASHBOARD PAGE (Only Shows Logged-In User's Posts) -->
+    <section id="dashboard" class="page">
+      <h2>My Creator Dashboard</h2>
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <h3>Your Published Posts</h3>
+          <p class="stat-number" id="user-post-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Active Session</h3>
+          <p class="stat-number" style="font-size: 1.25rem; margin-top: 0.5rem; color: #38bdf8;">JWT Secured 🔒</p>
+        </div>
+      </div>
+
+      <h3>Manage Your Articles</h3>
+      <div class="blog-grid" id="dashboard-blog-grid"></div>
+    </section>
+
+    <!-- USER PROFILE PAGE -->
+    <section id="profile" class="page">
+      <div class="form-card">
+        <h2>User Profile</h2>
+        <div class="info-badge">
+          <p>Verified JWT Session Profile</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem;">
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Full Name</p>
+            <h3 id="profile-name" style="font-size: 1.4rem; color: #ffffff;">User</h3>
+          </div>
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Email Address</p>
+            <p id="profile-email" style="font-size: 1.05rem; color: #cbd5e1;">user@example.com</p>
+          </div>
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Member Since</p>
+            <p id="profile-joined" style="font-size: 1.05rem; color: #cbd5e1;">-</p>
+          </div>
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Total Articles Published</p>
+            <p id="profile-articles" style="font-size: 1.4rem; font-weight: 800; color: #38bdf8;">0</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATE BLOG PAGE -->
+    <section id="create-blog" class="page">
+      <div class="form-card">
+        <h2>Publish New Blog Post</h2>
+        <form id="blog-form">
+          <label for="blog-title">Blog Title</label>
+          <input type="text" id="blog-title" placeholder="e.g. Fast Bowling Drills or Building Full Stack Apps" required>
+
+          <label for="blog-category">Category</label>
+          <select id="blog-category" class="custom-select" required>
+            <option value="Cricket">Cricket</option>
+            <option value="Football">Football</option>
+            <option value="Lifestyle">Lifestyle</option>
+            <option value="Career">Career</option>
+            <option value="AI & Tech">AI & Tech</option>
+            <option value="Web Dev">Web Dev</option>
+            <option value="Gaming">Gaming</option>
+            <option value="General" selected>General</option>
+          </select>
+
+          <label for="blog-content">Content</label>
+          <textarea id="blog-content" rows="7" placeholder="Write your full article here..." required></textarea>
+
+          <button type="submit" class="btn-primary">Publish Post</button>
+        </form>
+      </div>
     </section>
 
   </main>
+
+  <!-- EDIT BLOG MODAL -->
+  <div id="edit-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Edit Blog Post</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <form id="edit-form">
+        <input type="hidden" id="edit-blog-id">
+
+        <label for="edit-blog-title">Title</label>
+        <input type="text" id="edit-blog-title" required>
+
+        <label for="edit-blog-category">Category</label>
+        <select id="edit-blog-category" class="custom-select">
+          <option value="Cricket">Cricket</option>
+          <option value="Football">Football</option>
+          <option value="Lifestyle">Lifestyle</option>
+          <option value="Career">Career</option>
+          <option value="AI & Tech">AI & Tech</option>
+          <option value="Web Dev">Web Dev</option>
+          <option value="Gaming">Gaming</option>
+          <option value="General">General</option>
+        </select>
+
+        <label for="edit-blog-content">Content</label>
+        <textarea id="edit-blog-content" rows="6" required></textarea>
+
+        <div class="modal-actions">
+          <button type="button" id="cancel-edit-btn" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
