@@ -13,28 +13,42 @@ const searchInput = document.getElementById('search-input');
 const categoryPills = document.getElementById('category-pills');
 const editModal = document.getElementById('edit-modal');
 
-// --- SESSION MANAGEMENT ---
-function getSession() {
-  const session = localStorage.getItem('devblog_user');
-  return session ? JSON.parse(session) : null;
+// --- JWT TOKEN & SESSION MANAGEMENT ---
+function getToken() {
+  return localStorage.getItem('devblog_token');
 }
 
-function setSession(user) {
+function getUser() {
+  const user = localStorage.getItem('devblog_user');
+  return user ? JSON.parse(user) : null;
+}
+
+function setSession(token, user) {
+  localStorage.setItem('devblog_token', token);
   localStorage.setItem('devblog_user', JSON.stringify(user));
 }
 
 function clearSession() {
+  localStorage.removeItem('devblog_token');
   localStorage.removeItem('devblog_user');
 }
 
-// --- PAGE ROUTING ---
-function navigateTo(pageId, pushState = true) {
-  const user = getSession();
+// Helper to attach JWT Bearer token
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${getToken()}`
+  };
+}
 
-  // Route protection
-  if (!user && pageId !== 'login' && pageId !== 'register') {
+// --- PROTECTED PAGE ROUTING ---
+function navigateTo(pageId, pushState = true) {
+  const token = getToken();
+
+  // Route Guarding
+  if (!token && pageId !== 'login' && pageId !== 'register') {
     pageId = 'login';
-  } else if (user && (pageId === 'login' || pageId === 'register')) {
+  } else if (token && (pageId === 'login' || pageId === 'register')) {
     pageId = 'home';
   }
 
@@ -42,16 +56,17 @@ function navigateTo(pageId, pushState = true) {
   const target = document.getElementById(pageId);
   if (target) target.classList.add('active');
 
-  // Show/hide nav
-  if (user) {
+  // Nav display
+  if (token) {
     mainNav.style.display = 'flex';
   } else {
     mainNav.style.display = 'none';
   }
 
-  // Load contextual data
+  // Load section data
   if (pageId === 'home') loadHomeBlogs();
   if (pageId === 'dashboard') loadDashboardBlogs();
+  if (pageId === 'profile') loadUserProfile();
 
   if (pushState) {
     window.history.pushState({ pageId }, '', `#${pageId}`);
@@ -66,7 +81,6 @@ window.addEventListener('popstate', (e) => {
   }
 });
 
-// Navigation Click Handler
 document.addEventListener('click', (e) => {
   const pageBtn = e.target.closest('[data-page]');
   if (pageBtn) {
@@ -75,7 +89,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// --- AUTHENTICATION ---
+// --- AUTH: REGISTER ---
 document.getElementById('register-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('reg-name').value.trim();
@@ -90,12 +104,16 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     });
     const data = await res.json();
     alert(data.message);
-    if (data.success) navigateTo('login');
+    if (data.success) {
+      document.getElementById('register-form').reset();
+      navigateTo('login');
+    }
   } catch (err) {
-    alert('Registration failed. Check your server connection.');
+    alert('Registration failed. Make sure the server is running.');
   }
 });
 
+// --- AUTH: LOGIN ---
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
@@ -110,26 +128,50 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const data = await res.json();
 
     if (data.success) {
-      setSession(data.user);
+      setSession(data.token, data.user);
       document.getElementById('login-form').reset();
       navigateTo('home');
     } else {
       alert(data.message);
     }
   } catch (err) {
-    alert('Login error. Check if your backend server is running.');
+    alert('Login error. Check server status.');
   }
 });
 
+// --- AUTH: LOGOUT ---
 document.getElementById('logout-btn').addEventListener('click', () => {
   clearSession();
   navigateTo('login');
 });
 
-// --- CRUD: CREATE BLOG ---
+// --- PROFILE LOADER ---
+async function loadUserProfile() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/profile`, {
+      headers: authHeaders()
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      const p = data.profile;
+      document.getElementById('profile-name').textContent = p.name;
+      document.getElementById('profile-email').textContent = p.email;
+      document.getElementById('profile-articles').textContent = p.totalPosts;
+      document.getElementById('profile-joined').textContent = new Date(p.createdAt).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+  } catch (err) {
+    alert('Failed to load profile.');
+  }
+}
+
+// --- CREATE BLOG (Protected via Bearer Token) ---
 document.getElementById('blog-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const user = getSession();
   const title = document.getElementById('blog-title').value.trim();
   const category = document.getElementById('blog-category').value;
   const content = document.getElementById('blog-content').value.trim();
@@ -137,14 +179,8 @@ document.getElementById('blog-form').addEventListener('submit', async (e) => {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        category,
-        content,
-        author: user.name,
-        authorEmail: user.email
-      })
+      headers: authHeaders(),
+      body: JSON.stringify({ title, category, content })
     });
     const data = await res.json();
 
@@ -160,7 +196,7 @@ document.getElementById('blog-form').addEventListener('submit', async (e) => {
   }
 });
 
-// --- CRUD: READ BLOGS (Home Feed with Search & Category filters) ---
+// --- READ HOME BLOGS ---
 async function loadHomeBlogs() {
   const searchTerm = searchInput ? searchInput.value.trim() : '';
   const queryParams = new URLSearchParams();
@@ -205,7 +241,7 @@ async function loadHomeBlogs() {
   }
 }
 
-// --- CRUD: READ SINGLE BLOG ---
+// --- READ SINGLE BLOG ---
 window.viewSingleBlog = async function (id) {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs/${id}`);
@@ -234,9 +270,9 @@ document.getElementById('back-to-blogs-btn').addEventListener('click', () => {
   navigateTo('home');
 });
 
-// --- CRUD: READ DASHBOARD BLOGS (User-Specific with Update/Delete actions) ---
+// --- DASHBOARD BLOGS (Only Logged-in User's Posts) ---
 async function loadDashboardBlogs() {
-  const user = getSession();
+  const user = getUser();
   if (!user) return;
 
   try {
@@ -271,7 +307,7 @@ async function loadDashboardBlogs() {
   }
 }
 
-// --- CRUD: UPDATE (Modal Open & Save) ---
+// --- UPDATE BLOG (Protected) ---
 window.openEditModal = async function (id) {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs/${id}`);
@@ -289,16 +325,11 @@ window.openEditModal = async function (id) {
   }
 };
 
-document.getElementById('close-modal-btn').addEventListener('click', () => {
-  editModal.style.display = 'none';
-});
-document.getElementById('cancel-edit-btn').addEventListener('click', () => {
-  editModal.style.display = 'none';
-});
+document.getElementById('close-modal-btn').addEventListener('click', () => editModal.style.display = 'none');
+document.getElementById('cancel-edit-btn').addEventListener('click', () => editModal.style.display = 'none');
 
 document.getElementById('edit-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const user = getSession();
   const id = document.getElementById('edit-blog-id').value;
   const title = document.getElementById('edit-blog-title').value.trim();
   const category = document.getElementById('edit-blog-category').value;
@@ -307,8 +338,8 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, category, content, authorEmail: user.email })
+      headers: authHeaders(),
+      body: JSON.stringify({ title, category, content })
     });
     const data = await res.json();
 
@@ -324,16 +355,14 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
   }
 });
 
-// --- CRUD: DELETE BLOG ---
+// --- DELETE BLOG (Protected) ---
 window.deleteBlogPost = async function (id) {
-  if (!confirm('Are you sure you want to permanently delete this blog post?')) return;
-  const user = getSession();
+  if (!confirm('Are you sure you want to delete this blog post?')) return;
 
   try {
     const res = await fetch(`${API_BASE_URL}/blogs/${id}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ authorEmail: user.email })
+      headers: authHeaders()
     });
     const data = await res.json();
 
@@ -344,7 +373,7 @@ window.deleteBlogPost = async function (id) {
       alert(data.message);
     }
   } catch (err) {
-    alert('Failed to delete blog post.');
+    alert('Failed to delete post.');
   }
 };
 
@@ -354,7 +383,7 @@ if (searchInput) {
     clearTimeout(searchDebounceTimer);
     searchDebounceTimer = setTimeout(() => {
       loadHomeBlogs();
-    }, 300); // Debounced 300ms for smooth typing
+    }, 300);
   });
 }
 
@@ -369,5 +398,5 @@ if (categoryPills) {
   });
 }
 
-// Initial Boot
-navigateTo(getSession() ? 'home' : 'login', false);
+// Boot
+navigateTo(getToken() ? 'home' : 'login', false);

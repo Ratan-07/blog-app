@@ -14,6 +14,7 @@
     <ul class="nav-links">
       <li><button data-page="home">Home Feed</button></li>
       <li><button data-page="dashboard">My Dashboard</button></li>
+      <li><button data-page="profile">My Profile</button></li>
       <li><button data-page="create-blog">Create Blog</button></li>
       <li><button id="logout-btn" class="btn-danger">Logout</button></li>
     </ul>
@@ -30,7 +31,7 @@
         </div>
         
         <div class="info-badge">
-          <p>Welcome! Log in or register to publish articles, view community posts, and access CRUD controls.</p>
+          <p>Welcome! Log in with JWT authentication to access your personal dashboard and publish blogs.</p>
         </div>
 
         <h2>Account Login</h2>
@@ -72,14 +73,13 @@
       </div>
     </section>
 
-    <!-- HOME FEED (With Live Search & Extended Categories) -->
+    <!-- HOME FEED -->
     <section id="home" class="page">
       <div class="hero">
         <h1>Explore Community Insights</h1>
         <p>Read, write, edit, and discover articles across Sports, Tech, Gaming, and Lifestyle.</p>
       </div>
 
-      <!-- Search and Filter Bar -->
       <div class="filter-wrapper">
         <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search blogs by title or content...">
         
@@ -117,22 +117,50 @@
       </div>
     </section>
 
-    <!-- DASHBOARD PAGE -->
+    <!-- DASHBOARD PAGE (Only Shows Logged-In User's Posts) -->
     <section id="dashboard" class="page">
       <h2>My Creator Dashboard</h2>
       <div class="dashboard-stats">
         <div class="stat-card">
-          <h3>Your Posts</h3>
+          <h3>Your Published Posts</h3>
           <p class="stat-number" id="user-post-count">0</p>
         </div>
         <div class="stat-card">
-          <h3>Total Views</h3>
-          <p class="stat-number">1,240</p>
+          <h3>Active Session</h3>
+          <p class="stat-number" style="font-size: 1.25rem; margin-top: 0.5rem; color: #38bdf8;">JWT Secured 🔒</p>
         </div>
       </div>
 
       <h3>Manage Your Articles</h3>
       <div class="blog-grid" id="dashboard-blog-grid"></div>
+    </section>
+
+    <!-- USER PROFILE PAGE -->
+    <section id="profile" class="page">
+      <div class="form-card">
+        <h2>User Profile</h2>
+        <div class="info-badge">
+          <p>Verified JWT Session Profile</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem;">
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Full Name</p>
+            <h3 id="profile-name" style="font-size: 1.4rem; color: #ffffff;">User</h3>
+          </div>
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Email Address</p>
+            <p id="profile-email" style="font-size: 1.05rem; color: #cbd5e1;">user@example.com</p>
+          </div>
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Member Since</p>
+            <p id="profile-joined" style="font-size: 1.05rem; color: #cbd5e1;">-</p>
+          </div>
+          <div>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Total Articles Published</p>
+            <p id="profile-articles" style="font-size: 1.4rem; font-weight: 800; color: #38bdf8;">0</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- CREATE BLOG PAGE -->
