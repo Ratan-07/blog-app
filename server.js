@@ -135,17 +135,30 @@ app.get('/api/profile', verifyToken, async (req, res) => {
 
 // --- BLOG CRUD ROUTES ---
 
-// Public: Get all blogs (with search & category filters)
+// Public: Get all blogs (with flexible search & category filters)
 app.get('/api/blogs', async (req, res) => {
   const { search, category, authorEmail } = req.query;
   let filter = {};
 
-  if (category && category !== 'All') filter.category = category;
-  if (authorEmail) filter.authorEmail = authorEmail;
-  if (search) {
+  if (authorEmail) {
+    filter.authorEmail = authorEmail;
+  }
+
+  if (category && category !== 'All') {
+    filter.category = category;
+  }
+
+  if (search && search.trim()) {
+    const cleanSearch = search.trim();
+    // Build a flexible regex pattern ignoring special chars (e.g. matches "ai", "aitech", "ai & tech")
+    const flexiblePattern = cleanSearch.replace(/[^a-zA-Z0-9]/g, '.*');
+    const categoryRegex = new RegExp(flexiblePattern, 'i');
+
     filter.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { content: { $regex: search, $options: 'i' } }
+      { title: { $regex: cleanSearch, $options: 'i' } },
+      { content: { $regex: cleanSearch, $options: 'i' } },
+      { category: { $regex: categoryRegex } },
+      { author: { $regex: cleanSearch, $options: 'i' } }
     ];
   }
 
