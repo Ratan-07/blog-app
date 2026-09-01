@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevBlog - Developer Publishing Platform</title>
+  <title>DevBlog - Full Stack Publishing Platform</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- Navigation Bar -->
   <nav class="navbar" id="main-nav" style="display: none;">
-    <div class="logo">DevBlog</div>
+    <div class="logo">DevBlog 🚀</div>
     <ul class="nav-links">
-      <li><button data-page="home">Home</button></li>
-      <li><button data-page="dashboard">Dashboard</button></li>
+      <li><button data-page="home">Home Feed</button></li>
+      <li><button data-page="dashboard">My Dashboard</button></li>
       <li><button data-page="create-blog">Create Blog</button></li>
       <li><button id="logout-btn" class="btn-danger">Logout</button></li>
     </ul>
@@ -20,15 +21,16 @@
 
   <main class="container">
 
+    <!-- LOGIN PAGE -->
     <section id="login" class="page active">
       <div class="auth-card">
         <div class="auth-header">
           <div class="brand-logo">DevBlog</div>
-          <p class="app-tagline">The Tech Community Blogging Platform</p>
+          <p class="app-tagline">The Tech, Sports & Lifestyle Blogging Platform</p>
         </div>
         
         <div class="info-badge">
-          <p>Welcome! Log in or register to publish articles, view community posts, and manage your content.</p>
+          <p>Welcome! Log in or register to publish articles, view community posts, and access CRUD controls.</p>
         </div>
 
         <h2>Account Login</h2>
@@ -48,6 +50,7 @@
       </div>
     </section>
 
+    <!-- REGISTER PAGE -->
     <section id="register" class="page">
       <div class="auth-card">
         <h2>Create an Account</h2>
@@ -69,10 +72,40 @@
       </div>
     </section>
 
+    <!-- HOME FEED (With Live Search & Extended Categories) -->
+    <section id="home" class="page">
+      <div class="hero">
+        <h1>Explore Community Insights</h1>
+        <p>Read, write, edit, and discover articles across Sports, Tech, Gaming, and Lifestyle.</p>
+      </div>
+
+      <!-- Search and Filter Bar -->
+      <div class="filter-wrapper">
+        <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search blogs by title or content...">
+        
+        <div class="category-pills" id="category-pills">
+          <button class="pill active" data-category="All">All</button>
+          <button class="pill" data-category="Cricket">🏏 Cricket</button>
+          <button class="pill" data-category="Football">⚽ Football</button>
+          <button class="pill" data-category="Lifestyle">🌿 Lifestyle</button>
+          <button class="pill" data-category="Career">🎯 Career</button>
+          <button class="pill" data-category="AI & Tech">🤖 AI & Tech</button>
+          <button class="pill" data-category="Web Dev">💻 Web Dev</button>
+          <button class="pill" data-category="Gaming">🎮 Gaming</button>
+          <button class="pill" data-category="General">📌 General</button>
+        </div>
+      </div>
+
+      <h2>Recent Blog Posts</h2>
+      <div class="blog-grid" id="home-blog-grid"></div>
+    </section>
+
+    <!-- SINGLE BLOG DETAIL PAGE -->
     <section id="blog-detail" class="page">
       <div class="detail-container">
         <button class="btn-back" id="back-to-blogs-btn">← Back to All Blogs</button>
         <article class="single-post">
+          <span class="category-tag" id="single-blog-category">General</span>
           <h1 id="single-blog-title">Blog Title</h1>
           <p class="meta">
             Published by <strong id="single-blog-author">Author</strong> on 
@@ -84,20 +117,12 @@
       </div>
     </section>
 
-    <section id="home" class="page">
-      <div class="hero">
-        <h1>Welcome to DevBlog</h1>
-        <p>Read, write, and share tech insights with the developer community.</p>
-      </div>
-      <h2>Recent Blog Posts</h2>
-      <div class="blog-grid" id="home-blog-grid"></div>
-    </section>
-
+    <!-- DASHBOARD PAGE -->
     <section id="dashboard" class="page">
-      <h2>User Dashboard</h2>
+      <h2>My Creator Dashboard</h2>
       <div class="dashboard-stats">
         <div class="stat-card">
-          <h3>Total Posts</h3>
+          <h3>Your Posts</h3>
           <p class="stat-number" id="user-post-count">0</p>
         </div>
         <div class="stat-card">
@@ -105,19 +130,33 @@
           <p class="stat-number">1,240</p>
         </div>
       </div>
-      <h3>Your Published Blogs</h3>
+
+      <h3>Manage Your Articles</h3>
       <div class="blog-grid" id="dashboard-blog-grid"></div>
     </section>
 
+    <!-- CREATE BLOG PAGE -->
     <section id="create-blog" class="page">
       <div class="form-card">
-        <h2>Create New Blog Post</h2>
+        <h2>Publish New Blog Post</h2>
         <form id="blog-form">
           <label for="blog-title">Blog Title</label>
-          <input type="text" id="blog-title" placeholder="Enter post title" required>
+          <input type="text" id="blog-title" placeholder="e.g. Fast Bowling Drills or Building Full Stack Apps" required>
+
+          <label for="blog-category">Category</label>
+          <select id="blog-category" class="custom-select" required>
+            <option value="Cricket">Cricket</option>
+            <option value="Football">Football</option>
+            <option value="Lifestyle">Lifestyle</option>
+            <option value="Career">Career</option>
+            <option value="AI & Tech">AI & Tech</option>
+            <option value="Web Dev">Web Dev</option>
+            <option value="Gaming">Gaming</option>
+            <option value="General" selected>General</option>
+          </select>
 
           <label for="blog-content">Content</label>
-          <textarea id="blog-content" rows="6" placeholder="Write your blog post content here..." required></textarea>
+          <textarea id="blog-content" rows="7" placeholder="Write your full article here..." required></textarea>
 
           <button type="submit" class="btn-primary">Publish Post</button>
         </form>
@@ -125,6 +164,42 @@
     </section>
 
   </main>
+
+  <!-- EDIT BLOG MODAL -->
+  <div id="edit-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Edit Blog Post</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <form id="edit-form">
+        <input type="hidden" id="edit-blog-id">
+
+        <label for="edit-blog-title">Title</label>
+        <input type="text" id="edit-blog-title" required>
+
+        <label for="edit-blog-category">Category</label>
+        <select id="edit-blog-category" class="custom-select">
+          <option value="Cricket">Cricket</option>
+          <option value="Football">Football</option>
+          <option value="Lifestyle">Lifestyle</option>
+          <option value="Career">Career</option>
+          <option value="AI & Tech">AI & Tech</option>
+          <option value="Web Dev">Web Dev</option>
+          <option value="Gaming">Gaming</option>
+          <option value="General">General</option>
+        </select>
+
+        <label for="edit-blog-content">Content</label>
+        <textarea id="edit-blog-content" rows="6" required></textarea>
+
+        <div class="modal-actions">
+          <button type="button" id="cancel-edit-btn" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
