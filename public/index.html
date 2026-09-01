@@ -34,7 +34,7 @@
         </div>
         
         <div class="info-badge">
-          <p>Welcome! Log in to access your creator dashboard and publish articles.</p>
+          <p>Welcome! Log in to access your creator dashboard and publish your latest articles.</p>
         </div>
 
         <h2>Account Login</h2>
@@ -89,7 +89,10 @@
       </div>
 
       <div class="filter-wrapper">
-        <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search blogs by title or content...">
+        <div class="search-container">
+          <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search blogs by title, category, or content..." autocomplete="off">
+          <div id="search-suggestions" class="search-suggestions" style="display: none;"></div>
+        </div>
         
         <div class="category-pills" id="category-pills">
           <button class="pill active" data-category="All">All</button>

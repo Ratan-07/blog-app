@@ -327,11 +327,62 @@ button:hover, .btn-primary:hover {
   gap: 1.2rem;
 }
 
+/* SEARCH WRAPPER & RECOMMENDATIONS */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
 .search-bar {
   font-size: 1rem;
   padding: 0.95rem 1.25rem;
   background-color: var(--card-bg);
   border: 1px solid #243048;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #0d1424;
+  border: 1px solid #223049;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.suggestion-item {
+  padding: 0.8rem 1.1rem;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #1a253a;
+  transition: all 0.15s ease;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+}
+
+.suggestion-item strong {
+  color: #ffffff;
+}
+
+.suggestion-empty {
+  padding: 0.85rem 1.1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .category-pills {

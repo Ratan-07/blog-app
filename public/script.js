@@ -2,6 +2,23 @@ const API_BASE_URL = window.location.origin.includes('localhost')
   ? 'http://localhost:5000/api' 
   : '/api';
 
+// Supported Categories
+const AVAILABLE_CATEGORIES = [
+  'Cricket',
+  'Football',
+  'Lifestyle',
+  'Career',
+  'AI & Tech',
+  'Web Dev',
+  'Gaming',
+  'General'
+];
+
+// Helper: normalize strings (lowercases, removes whitespace & symbols) for fuzzy search
+function cleanString(str) {
+  return (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
 // Application State
 let activeCategory = 'All';
 let searchDebounceTimer = null;
@@ -12,6 +29,7 @@ const pages = document.querySelectorAll('.page');
 const homeGrid = document.getElementById('home-blog-grid');
 const dashboardGrid = document.getElementById('dashboard-blog-grid');
 const searchInput = document.getElementById('search-input');
+const searchSuggestions = document.getElementById('search-suggestions');
 const categoryPills = document.getElementById('category-pills');
 const editModal = document.getElementById('edit-modal');
 
@@ -375,26 +393,82 @@ window.deleteBlogPost = async function (id) {
   }
 };
 
-// Search & Filter Listeners
-if (searchInput) {
-  searchInput.addEventListener('input', () => {
+// --- SMART SEARCH & CATEGORY RECOMMENDATIONS ---
+function selectCategoryBySearch(categoryName) {
+  activeCategory = categoryName;
+  document.querySelectorAll('.pill').forEach(p => {
+    if (p.dataset.category === categoryName) {
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
+  });
+
+  if (searchInput) searchInput.value = '';
+  if (searchSuggestions) searchSuggestions.style.display = 'none';
+  loadHomeBlogs();
+}
+
+if (searchInput && searchSuggestions) {
+  searchInput.addEventListener('input', (e) => {
+    const rawVal = e.target.value.trim();
+    const cleanVal = cleanString(rawVal);
+
+    if (!rawVal) {
+      searchSuggestions.innerHTML = '';
+      searchSuggestions.style.display = 'none';
+      loadHomeBlogs();
+      return;
+    }
+
+    // Match categories regardless of spaces/casing
+    const matched = AVAILABLE_CATEGORIES.filter(cat => {
+      const cleanCat = cleanString(cat);
+      return cleanCat.includes(cleanVal) || cleanVal.includes(cleanCat);
+    });
+
+    if (matched.length > 0) {
+      searchSuggestions.innerHTML = matched.map(cat => `
+        <div class="suggestion-item" onclick="selectCategoryBySearch('${cat}')">
+          <span>🏷️</span> Filter category: <strong>${cat}</strong>
+        </div>
+      `).join('');
+    } else {
+      searchSuggestions.innerHTML = `
+        <div class="suggestion-empty">
+          No category found for "${rawVal}". Searching all post content...
+        </div>
+      `;
+    }
+
+    searchSuggestions.style.display = 'block';
+
     clearTimeout(searchDebounceTimer);
     searchDebounceTimer = setTimeout(() => {
       loadHomeBlogs();
     }, 300);
   });
+
+  // Close suggestion dropdown on click outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-container')) {
+      searchSuggestions.style.display = 'none';
+    }
+  });
 }
 
+// Category Pills click listener
 if (categoryPills) {
   categoryPills.addEventListener('click', (e) => {
     if (e.target.classList.contains('pill')) {
       document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
       e.target.classList.add('active');
       activeCategory = e.target.dataset.category;
+      if (searchSuggestions) searchSuggestions.style.display = 'none';
       loadHomeBlogs();
     }
   });
 }
 
-// Initial Boot
+// Boot
 navigateTo(getToken() ? 'home' : 'login', false);
