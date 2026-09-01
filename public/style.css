@@ -4,7 +4,6 @@
   --card-border: #1f293d;
   --card-border-hover: #38bdf8;
   
-  /* Vibrant Accents */
   --accent: #38bdf8;
   --accent-hover: #0ea5e9;
   --accent-glow: rgba(56, 189, 248, 0.2);
@@ -12,7 +11,6 @@
   --danger: #f43f5e;
   --danger-hover: #e11d48;
   
-  /* Text Contrast Hierarchy */
   --text-main: #ffffff;
   --text-sub: #cbd5e1;
   --text-muted: #94a3b8;
@@ -103,7 +101,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* HEADINGS & SECTION TITLES */
+/* HEADINGS */
 h1 {
   color: #ffffff;
   font-size: 2.2rem;
@@ -311,7 +309,7 @@ button:hover, .btn-primary:hover {
   font-weight: 900;
   background: linear-gradient(135deg, #ffffff 40%, var(--accent) 100%);
   -webkit-background-clip: text;
-  background-clip: text; /* Add this standard property */
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -552,39 +550,22 @@ button:hover, .btn-primary:hover {
   font-size: 1.05rem;
   line-height: 1.85;
 }
-/* Mobile Responsive Overhaul */
+
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
   }
-
   .nav-links {
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem;
   }
-
-  .nav-links li button {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.8rem;
-  }
-
   .hero h1 {
     font-size: 1.75rem;
   }
-
-  .blog-grid {
+  .blog-grid, .dashboard-stats {
     grid-template-columns: 1fr;
-  }
-
-  .dashboard-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .modal-card {
-    width: 95%;
-    padding: 1.25rem;
   }
 }

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevBlog - Full Stack Publishing Platform</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -31,7 +34,7 @@
         </div>
         
         <div class="info-badge">
-          <p>Welcome! Log in with JWT authentication to access your personal dashboard and publish blogs.</p>
+          <p>Welcome! Log in to access your creator dashboard and publish articles.</p>
         </div>
 
         <h2>Account Login</h2>
@@ -54,6 +57,11 @@
     <!-- REGISTER PAGE -->
     <section id="register" class="page">
       <div class="auth-card">
+        <div class="auth-header">
+          <div class="brand-logo">DevBlog</div>
+          <p class="app-tagline">Join our creator community</p>
+        </div>
+        
         <h2>Create an Account</h2>
         <form id="register-form">
           <label for="reg-name">Full Name</label>
@@ -117,7 +125,7 @@
       </div>
     </section>
 
-    <!-- DASHBOARD PAGE (Only Shows Logged-In User's Posts) -->
+    <!-- DASHBOARD PAGE -->
     <section id="dashboard" class="page">
       <h2>My Creator Dashboard</h2>
       <div class="dashboard-stats">
@@ -126,8 +134,8 @@
           <p class="stat-number" id="user-post-count">0</p>
         </div>
         <div class="stat-card">
-          <h3>Active Session</h3>
-          <p class="stat-number" style="font-size: 1.25rem; margin-top: 0.5rem; color: #38bdf8;">JWT Secured 🔒</p>
+          <h3>Account Status</h3>
+          <p class="stat-number" style="font-size: 1.25rem; margin-top: 0.5rem; color: #38bdf8;">Active & Verified 🔒</p>
         </div>
       </div>
 
@@ -140,7 +148,7 @@
       <div class="form-card">
         <h2>User Profile</h2>
         <div class="info-badge">
-          <p>Verified JWT Session Profile</p>
+          <p>Active Verified Author</p>
         </div>
         <div style="display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem;">
           <div>

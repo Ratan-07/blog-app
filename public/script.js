@@ -15,7 +15,7 @@ const searchInput = document.getElementById('search-input');
 const categoryPills = document.getElementById('category-pills');
 const editModal = document.getElementById('edit-modal');
 
-// --- JWT TOKEN & SESSION MANAGEMENT ---
+// Session Management
 function getToken() {
   return localStorage.getItem('devblog_token');
 }
@@ -35,7 +35,6 @@ function clearSession() {
   localStorage.removeItem('devblog_user');
 }
 
-// Helper to attach JWT Bearer token
 function authHeaders() {
   return {
     'Content-Type': 'application/json',
@@ -43,11 +42,10 @@ function authHeaders() {
   };
 }
 
-// --- PROTECTED PAGE ROUTING ---
+// Page Routing
 function navigateTo(pageId, pushState = true) {
   const token = getToken();
 
-  // Route Guarding
   if (!token && pageId !== 'login' && pageId !== 'register') {
     pageId = 'login';
   } else if (token && (pageId === 'login' || pageId === 'register')) {
@@ -58,14 +56,12 @@ function navigateTo(pageId, pushState = true) {
   const target = document.getElementById(pageId);
   if (target) target.classList.add('active');
 
-  // Nav display
   if (token) {
     mainNav.style.display = 'flex';
   } else {
     mainNav.style.display = 'none';
   }
 
-  // Load section data
   if (pageId === 'home') loadHomeBlogs();
   if (pageId === 'dashboard') loadDashboardBlogs();
   if (pageId === 'profile') loadUserProfile();
@@ -91,7 +87,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// --- AUTH: REGISTER ---
+// Auth: Register
 document.getElementById('register-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('reg-name').value.trim();
@@ -115,7 +111,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   }
 });
 
-// --- AUTH: LOGIN ---
+// Auth: Login
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
@@ -141,13 +137,13 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   }
 });
 
-// --- AUTH: LOGOUT ---
+// Auth: Logout
 document.getElementById('logout-btn').addEventListener('click', () => {
   clearSession();
   navigateTo('login');
 });
 
-// --- PROFILE LOADER ---
+// Profile Loader
 async function loadUserProfile() {
   try {
     const res = await fetch(`${API_BASE_URL}/profile`, {
@@ -171,7 +167,7 @@ async function loadUserProfile() {
   }
 }
 
-// --- CREATE BLOG (Protected via Bearer Token) ---
+// Create Blog
 document.getElementById('blog-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const title = document.getElementById('blog-title').value.trim();
@@ -198,7 +194,7 @@ document.getElementById('blog-form').addEventListener('submit', async (e) => {
   }
 });
 
-// --- READ HOME BLOGS ---
+// Read Home Blogs
 async function loadHomeBlogs() {
   const searchTerm = searchInput ? searchInput.value.trim() : '';
   const queryParams = new URLSearchParams();
@@ -212,7 +208,7 @@ async function loadHomeBlogs() {
     homeGrid.innerHTML = '';
 
     if (!data.blogs || data.blogs.length === 0) {
-      homeGrid.innerHTML = '<p class="meta">No blog posts found matching your criteria.</p>';
+      homeGrid.innerHTML = '<p class="meta" style="grid-column: 1/-1; text-align: center; padding: 2rem;">No blog posts found matching your criteria.</p>';
       return;
     }
 
@@ -239,11 +235,11 @@ async function loadHomeBlogs() {
       homeGrid.appendChild(card);
     });
   } catch (err) {
-    homeGrid.innerHTML = '<p class="meta">Error fetching articles from server.</p>';
+    homeGrid.innerHTML = '<p class="meta" style="grid-column: 1/-1; text-align: center;">Error fetching articles from server.</p>';
   }
 }
 
-// --- READ SINGLE BLOG ---
+// Read Single Blog
 window.viewSingleBlog = async function (id) {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs/${id}`);
@@ -272,7 +268,7 @@ document.getElementById('back-to-blogs-btn').addEventListener('click', () => {
   navigateTo('home');
 });
 
-// --- DASHBOARD BLOGS (Only Logged-in User's Posts) ---
+// Dashboard Blogs
 async function loadDashboardBlogs() {
   const user = getUser();
   if (!user) return;
@@ -284,7 +280,7 @@ async function loadDashboardBlogs() {
     document.getElementById('user-post-count').textContent = data.blogs ? data.blogs.length : 0;
 
     if (!data.blogs || data.blogs.length === 0) {
-      dashboardGrid.innerHTML = '<p class="meta">You haven\'t published any posts yet.</p>';
+      dashboardGrid.innerHTML = '<p class="meta" style="grid-column: 1/-1; text-align: center; padding: 2rem;">You haven\'t published any posts yet.</p>';
       return;
     }
 
@@ -305,11 +301,11 @@ async function loadDashboardBlogs() {
       dashboardGrid.appendChild(card);
     });
   } catch (err) {
-    dashboardGrid.innerHTML = '<p class="meta">Error loading dashboard items.</p>';
+    dashboardGrid.innerHTML = '<p class="meta" style="grid-column: 1/-1; text-align: center;">Error loading dashboard items.</p>';
   }
 }
 
-// --- UPDATE BLOG (Protected) ---
+// Update Blog
 window.openEditModal = async function (id) {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs/${id}`);
@@ -357,7 +353,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
   }
 });
 
-// --- DELETE BLOG (Protected) ---
+// Delete Blog
 window.deleteBlogPost = async function (id) {
   if (!confirm('Are you sure you want to delete this blog post?')) return;
 
@@ -379,7 +375,7 @@ window.deleteBlogPost = async function (id) {
   }
 };
 
-// --- SEARCH & CATEGORY FILTER LISTENERS ---
+// Search & Filter Listeners
 if (searchInput) {
   searchInput.addEventListener('input', () => {
     clearTimeout(searchDebounceTimer);
@@ -400,5 +396,5 @@ if (categoryPills) {
   });
 }
 
-// Boot
+// Initial Boot
 navigateTo(getToken() ? 'home' : 'login', false);
